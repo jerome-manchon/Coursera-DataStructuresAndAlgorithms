@@ -3,7 +3,7 @@ import java.util.*;
 
 
 
-public class E2_TrieMatching implements Runnable {
+public class W1A2_TrieMatching implements Runnable {
 
 	List <Integer> solve (String text, int n, List <String> patterns) {
 		List <Integer> result = new ArrayList <Integer> ();
@@ -54,7 +54,7 @@ public class E2_TrieMatching implements Runnable {
 	}
 
 	public static void main (String [] args) {
-		new Thread (new E2_TrieMatching ()).start ();
+		new Thread (new W1A2_TrieMatching ()).start ();
 	}
 	
 	List<Map<Character, Integer>> buildTrie(String[] patterns) {

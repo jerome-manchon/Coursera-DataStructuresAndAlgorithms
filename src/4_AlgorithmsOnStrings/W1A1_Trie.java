@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class E1_Trie {
+public class W1A1_Trie {
     class FastScanner {
         StringTokenizer tok = new StringTokenizer("");
         BufferedReader in;
@@ -47,7 +47,7 @@ public class E1_Trie {
     }
 
     static public void main(String[] args) throws IOException {
-        new E1_Trie().run();
+        new W1A1_Trie().run();
     }
 
     public void print(List<Map<Character, Integer>> trie) {

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
-public class E4_SuffixTree {
+public class W1A4_SuffixTree {
     
 	List<Map<Character, TrieNode>> patternTrie;
 	
@@ -31,27 +31,8 @@ public class E4_SuffixTree {
         }
     }
 
-    // Build a suffix tree of the string text and return a list
-    // with all of the labels of its edges (the corresponding 
-    // substrings of the text) in any order.
     public List<String> computeSuffixTreeEdges(String text) {
-      
-        
-        List<String> suffix = new ArrayList<String>();
-        // Implement this function yourself
-        for(int i = 0; i < text.length(); i++){
-        	suffix.add(text.substring(i));
-        }
-        
-        patternTrie = buildTrie(suffix.toArray(new String[suffix.size()]));
-        
-//        for (int i = 0; i < patternTrie.size(); ++i) {
-//            Map<Character, TrieNode> node = patternTrie.get(i);
-//            for (Entry<Character, TrieNode> entry : node.entrySet()) {
-//                System.out.println(i + "->" + entry.getValue().index + ":" + entry.getKey());
-//            }
-//        }
-        
+        patternTrie = buildSuffixTrie(text);
         return getSuffix(0,"");
     }
     
@@ -66,7 +47,6 @@ public class E4_SuffixTree {
     		currentNode = patternTrie.get(currentNode.entrySet().iterator().next().getValue().index);
     	}
     	if(!edge.equals("")){
-    		//System.out.println("adding : "+edge);
     		result.add(edge);
     	}
     	
@@ -83,7 +63,7 @@ public class E4_SuffixTree {
 
 
     static public void main(String[] args) throws IOException {
-        new E4_SuffixTree().run();
+        new W1A4_SuffixTree().run();
     }
 
     public void print(List<String> x) {
@@ -126,6 +106,61 @@ public class E4_SuffixTree {
         return trie;
     }
     
+    List<Map<Character, TrieNode>> buildSuffixTrie(String patterns) {
+        List<Map<Character, TrieNode>> trie = new ArrayList<Map<Character, TrieNode>>();
+
+        Integer nodeIndex;
+        
+        trie.add(new HashMap<Character, TrieNode>());
+        
+        for(int i = 0; i < patterns.length(); i++){
+        	nodeIndex = 0;
+        	for(int k = i; k < patterns.length(); k++){
+	        	
+	        	
+        		TrieNode nextNode = trie.get(nodeIndex).get(patterns.charAt(k));
+        		if(nextNode == null){
+        			nextNode = new TrieNode(trie.size(), false);
+        			trie.get(nodeIndex).put(patterns.charAt(k), nextNode);
+        			trie.add(new HashMap<Character, TrieNode>());
+        		}
+        		
+        		nextNode.isEnd = nextNode.isEnd?true:k == patterns.length() - 1;
+        		nodeIndex = nextNode.index;
+	        	
+        	}
+        }
+
+        return trie;
+    }
+    
+//    List<Map<Character, TrieNode>> buildTrie(String[] patterns) {
+//        List<Map<Character, TrieNode>> trie = new ArrayList<Map<Character, TrieNode>>();
+//
+//        Integer nodeIndex;
+//        
+//        trie.add(new HashMap<Character, TrieNode>());
+//        for(int k = 0; k < patterns.length; k++){
+//	        for(int i = 0; k+i < patterns.length(); i++){
+//	        	nodeIndex = 0;
+//	        	for(int j = 0; j < patterns[i].length(); j++){
+//	        		TrieNode nextNode = trie.get(nodeIndex).get(patterns[i].charAt(j));
+//	        		if(nextNode == null){
+//	        			nextNode = new TrieNode(trie.size(), false);
+//	        			trie.get(nodeIndex).put(patterns[i].charAt(j), nextNode);
+//	        			trie.add(new HashMap<Character, TrieNode>());
+//	        		}
+//	        		
+//	        		nextNode.isEnd = nextNode.isEnd?true:j == patterns[i].length() - 1;
+//	        		nodeIndex = nextNode.index;
+//	        			
+//	        	}
+//	        }
+//        }
+//
+//        return trie;
+//    }
+//    
     
     public class TrieNode{
 		public Integer index;

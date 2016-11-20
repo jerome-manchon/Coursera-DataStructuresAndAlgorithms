@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class E3_TrieMatchingExtended implements Runnable {
+public class W1A3_TrieMatchingExtended implements Runnable {
 	
 
 	List <Integer> solve (String text, int n, List <String> patterns) {
@@ -69,7 +69,7 @@ public class E3_TrieMatchingExtended implements Runnable {
 	}
 
 	public static void main (String [] args) {
-		new Thread (new E3_TrieMatchingExtended ()).start ();
+		new Thread (new W1A3_TrieMatchingExtended ()).start ();
 	}
 	
 	List<Map<Character, TrieNode>> buildTrie(String[] patterns) {

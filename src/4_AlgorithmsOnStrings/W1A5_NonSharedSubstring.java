@@ -7,15 +7,15 @@ import java.util.Map;
 
 
 
-public class E5_NonSharedSubstring implements Runnable {
+public class W1A5_NonSharedSubstring implements Runnable {
 	String solve (String p, String q) {
 		String result = p;
 		
-		 List<String> pSuffix = new ArrayList<String>();
-	        // Implement this function yourself
-	        for(int i = 0; i < p.length(); i++){
-	        	pSuffix.add(p.substring(i));
-	        }
+//		 List<String> pSuffix = new ArrayList<String>();
+//	        // Implement this function yourself
+//	        for(int i = 0; i < p.length(); i++){
+//	        	pSuffix.add(p.substring(i));
+//	        }
 	        
 	   	 List<String> qSuffix = new ArrayList<String>();
 	        // Implement this function yourself
@@ -24,10 +24,32 @@ public class E5_NonSharedSubstring implements Runnable {
 	        }
 		
 		
-		List<Map<Character, Integer>> pTrie = buildTrie(pSuffix);
+		//List<Map<Character, Integer>> pTrie = buildTrie(pSuffix);
 		List<Map<Character, Integer>> qTrie = buildTrie(qSuffix);
-
 		
+		
+		
+		for(int i = 0; i < p.length(); i++){
+			Integer nodeIndex = 0;
+			for(int j = 0; i+j < p.length(); j++){
+				//System.out.print("i = "+i+"; j = "+j+"; search = "+p.substring(i, i+j+1)+"; ");
+				if(!qTrie.get(nodeIndex).containsKey(p.charAt(i+j))){
+					
+					if(j < result.length()-1){
+						result = p.substring(i, i+j+1);
+						//System.out.println("found = KO; saving !");
+					}
+					else{
+						//System.out.println("found = KO");
+					}
+					break;
+				}
+				else{
+					nodeIndex = qTrie.get(nodeIndex).get(p.charAt(i+j));
+					//System.out.println("found = OK");
+				}
+			}
+		}
 		
 		
 		return result;
@@ -50,7 +72,7 @@ public class E5_NonSharedSubstring implements Runnable {
 	}
 
 	public static void main (String [] args) {
-		new Thread (new E5_NonSharedSubstring ()).start ();
+		new Thread (new W1A5_NonSharedSubstring ()).start ();
 	}
 	
 	List<Map<Character, Integer>> buildTrie(List<String> patterns) {
