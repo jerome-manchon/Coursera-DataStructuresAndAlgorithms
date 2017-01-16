@@ -2,15 +2,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 public class W1A4_SuffixTree {
     
-	List<Map<Character, TrieNode>> patternTrie;
+	List<Integer[]> patternTrie;
 	
 	class FastScanner {
         StringTokenizer tok = new StringTokenizer("");
@@ -30,6 +27,45 @@ public class W1A4_SuffixTree {
             return Integer.parseInt(next());
         }
     }
+	
+	int letterToIndex (char letter)
+	{
+		switch (letter)
+		{
+			case 'A': return 0;
+			case 'C': return 1;
+			case 'G': return 2;
+			case 'T': return 3;
+			case '$': return 4;
+			default: assert (false); return -1;
+		}
+	}
+	
+	char indexToLetter (int letter)
+	{
+		switch (letter)
+		{
+			case 0: return 'A';
+			case 1: return 'C';
+			case 2: return 'G';
+			case 3: return 'T';
+			case 4: return '$';
+			default: assert (false); return 'X';
+		}
+	}
+	
+	int countNonNullValues(Integer[] array){
+		int nonNullCounter = 0;
+		for(Integer x : array){
+			if(x != null){
+				nonNullCounter++;
+			}
+		}
+		
+		return nonNullCounter;
+	}
+	
+	
 
     public List<String> computeSuffixTreeEdges(String text) {
         patternTrie = buildSuffixTrie(text);
@@ -39,21 +75,30 @@ public class W1A4_SuffixTree {
     public List<String> getSuffix(Integer nodeId, String prefix){
     	List<String> result = new ArrayList<>();
     	
-    	Map<Character, TrieNode> currentNode = patternTrie.get(nodeId);
+    	Integer[] currentNode = patternTrie.get(nodeId);
     	String edge = prefix;
     	
-    	while(currentNode.size() == 1){
-    		edge += currentNode.entrySet().iterator().next().getKey();
-    		currentNode = patternTrie.get(currentNode.entrySet().iterator().next().getValue().index);
+    	
+    	while(countNonNullValues(currentNode) == 1){
+    		for(int i = 0; i < 5; i++){
+    			if(currentNode[i] != null){
+    				edge += indexToLetter(i);
+    				currentNode = patternTrie.get(currentNode[i]);
+    				break;
+    			}
+    		}
     	}
     	if(!edge.equals("")){
     		result.add(edge);
     	}
     	
-    	if(currentNode.size() > 0){
-    		for(Entry<Character, TrieNode> entry : currentNode.entrySet()){
-        		result.addAll(getSuffix(entry.getValue().index, ""+entry.getKey()));
+    	if(countNonNullValues(currentNode) > 0){
+    		for(int i = 0; i<5; i++){
+    			if(currentNode[i] != null){
+    				result.addAll(getSuffix(currentNode[i], ""+indexToLetter(i)));
+    			}
     		}
+    			
     	}
     	
     	return result;
@@ -79,54 +124,25 @@ public class W1A4_SuffixTree {
         print(edges);
     }
     
-    
-    List<Map<Character, TrieNode>> buildTrie(String[] patterns) {
-        List<Map<Character, TrieNode>> trie = new ArrayList<Map<Character, TrieNode>>();
+    List<Integer[]> buildSuffixTrie(String patterns) {
+        List<Integer[]> trie = new ArrayList<Integer[]>();
 
         Integer nodeIndex;
         
-        trie.add(new HashMap<Character, TrieNode>());
-        
-        for(int i = 0; i < patterns.length; i++){
-        	nodeIndex = 0;
-        	for(int j = 0; j < patterns[i].length(); j++){
-        		TrieNode nextNode = trie.get(nodeIndex).get(patterns[i].charAt(j));
-        		if(nextNode == null){
-        			nextNode = new TrieNode(trie.size(), false);
-        			trie.get(nodeIndex).put(patterns[i].charAt(j), nextNode);
-        			trie.add(new HashMap<Character, TrieNode>());
-        		}
-        		
-        		nextNode.isEnd = nextNode.isEnd?true:j == patterns[i].length() - 1;
-        		nodeIndex = nextNode.index;
-        			
-        	}
-        }
-
-        return trie;
-    }
-    
-    List<Map<Character, TrieNode>> buildSuffixTrie(String patterns) {
-        List<Map<Character, TrieNode>> trie = new ArrayList<Map<Character, TrieNode>>();
-
-        Integer nodeIndex;
-        
-        trie.add(new HashMap<Character, TrieNode>());
+        trie.add(new Integer[5]);
         
         for(int i = 0; i < patterns.length(); i++){
         	nodeIndex = 0;
         	for(int k = i; k < patterns.length(); k++){
-	        	
-	        	
-        		TrieNode nextNode = trie.get(nodeIndex).get(patterns.charAt(k));
-        		if(nextNode == null){
-        			nextNode = new TrieNode(trie.size(), false);
-        			trie.get(nodeIndex).put(patterns.charAt(k), nextNode);
-        			trie.add(new HashMap<Character, TrieNode>());
+	        	Integer nextNode = trie.get(nodeIndex)[letterToIndex(patterns.charAt(k))];
+        		
+	        	if(nextNode == null){
+        			trie.get(nodeIndex)[letterToIndex(patterns.charAt(k))] = trie.size();
+        			nextNode = trie.size();
+        			trie.add(new Integer[5]);
         		}
         		
-        		nextNode.isEnd = nextNode.isEnd?true:k == patterns.length() - 1;
-        		nodeIndex = nextNode.index;
+        		nodeIndex = nextNode;
 	        	
         	}
         }
@@ -134,42 +150,6 @@ public class W1A4_SuffixTree {
         return trie;
     }
     
-//    List<Map<Character, TrieNode>> buildTrie(String[] patterns) {
-//        List<Map<Character, TrieNode>> trie = new ArrayList<Map<Character, TrieNode>>();
-//
-//        Integer nodeIndex;
-//        
-//        trie.add(new HashMap<Character, TrieNode>());
-//        for(int k = 0; k < patterns.length; k++){
-//	        for(int i = 0; k+i < patterns.length(); i++){
-//	        	nodeIndex = 0;
-//	        	for(int j = 0; j < patterns[i].length(); j++){
-//	        		TrieNode nextNode = trie.get(nodeIndex).get(patterns[i].charAt(j));
-//	        		if(nextNode == null){
-//	        			nextNode = new TrieNode(trie.size(), false);
-//	        			trie.get(nodeIndex).put(patterns[i].charAt(j), nextNode);
-//	        			trie.add(new HashMap<Character, TrieNode>());
-//	        		}
-//	        		
-//	        		nextNode.isEnd = nextNode.isEnd?true:j == patterns[i].length() - 1;
-//	        		nodeIndex = nextNode.index;
-//	        			
-//	        	}
-//	        }
-//        }
-//
-//        return trie;
-//    }
-//    
-    
-    public class TrieNode{
-		public Integer index;
-		public boolean isEnd;
-		
-		public TrieNode(Integer index, boolean isEnd){
-			this.index = index;
-			this.isEnd = isEnd;
-		}
-	}
+
     
 }

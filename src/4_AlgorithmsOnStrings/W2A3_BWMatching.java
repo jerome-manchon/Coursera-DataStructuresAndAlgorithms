@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.Map.Entry;
 
 public class W2A3_BWMatching {
     class FastScanner {
@@ -32,15 +33,47 @@ public class W2A3_BWMatching {
     //       occ_count_before[C][P] is the number of occurrences of character C in bwt
     //       from position 0 to position P inclusive.
     private void PreprocessBWT(String bwt, Map<Character, Integer> starts, Map<Character, int[]> occ_counts_before) {
-        // Implement this function yourself
+        
+        Map<Character, Integer> charCount = new HashMap<Character, Integer>();
+        for(int i = 0; i < bwt.length(); i++){
+        	if(!starts.containsKey(bwt.charAt(i))){
+            	starts.put(bwt.charAt(i), i);
+            	occ_counts_before.put(bwt.charAt(i), new int[bwt.length()+1]);
+            	charCount.put(bwt.charAt(i), 1);
+        	}
+        	else{
+        		charCount.put(bwt.charAt(i), charCount.get(bwt.charAt(i))+1);
+        	}
+        	for(Entry<Character, Integer> entry : charCount.entrySet()){
+        		occ_counts_before.get(entry.getKey())[i+1] = entry.getValue();
+        	}
+        	
+        }
     }
+    
+   
 
-    // Compute the number of occurrences of string pattern in the text
-    // given only Burrows-Wheeler Transform bwt of the text and additional
+    // Compute the number of occurrences of string pattern in the text given only Burrows-Wheeler Transform bwt of the text and additional
     // information we get from the preprocessing stage - starts and occ_counts_before.
     int CountOccurrences(String pattern, String bwt, Map<Character, Integer> starts, Map<Character, int[]> occ_counts_before) {
-        // Implement this function yourself
+    	int top = 0;
+        int bot = bwt.length()-1;
+        while(top <= bot) {
+            if(pattern.length() == 0) {
+                return bot - top + 1;
+            }
+            char symbol = pattern.charAt(pattern.length()-1);
+            pattern = pattern.substring(0,pattern.length()-1);
+            System.out.println("top: " + top + "; bot: "+bot+"; FirstOccurence: "+starts.get(symbol) + "; Count(top): "+occ_counts_before.get(symbol)[top] + " Count(bot+1) : "+occ_counts_before.get(symbol)[bot+1]);
+            top = starts.get(symbol) + occ_counts_before.get(symbol)[top];
+            bot = starts.get(symbol) + occ_counts_before.get(symbol)[bot+1] - 1;
+            System.out.println("    new top : " + top + "; bot: "+bot);
+            
+        }
+        return bot - top + 1;
     }
+    
+    
 
     static public void main(String[] args) throws IOException {
         new W2A3_BWMatching().run();
@@ -56,16 +89,15 @@ public class W2A3_BWMatching {
     public void run() throws IOException {
         FastScanner scanner = new FastScanner();
         String bwt = scanner.next();
-        // Start of each character in the sorted list of characters of bwt,
-        // see the description in the comment about function PreprocessBWT
+        
+        // Start of each character in the sorted list of characters of bwt, see the description in the comment about function PreprocessBWT
         Map<Character, Integer> starts = new HashMap<Character, Integer>();
-        // Occurrence counts for each character and each position in bwt,
-        // see the description in the comment about function PreprocessBWT
+        
+        // Occurrence counts for each character and each position in bwt, see the description in the comment about function PreprocessBWT
         Map<Character, int[]> occ_counts_before = new HashMap<Character, int[]>();
+        
         // Preprocess the BWT once to get starts and occ_count_before.
-        // For each pattern, we will then use these precomputed values and
-        // spend only O(|pattern|) to find all occurrences of the pattern
-        // in the text instead of O(|pattern| + |text|).
+        // For each pattern, we will then use these precomputed values and spend only O(|pattern|) to find all occurrences of the pattern in the text instead of O(|pattern| + |text|).
         PreprocessBWT(bwt, starts, occ_counts_before);
         int patternCount = scanner.nextInt();
         String[] patterns = new String[patternCount];

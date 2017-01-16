@@ -27,6 +27,18 @@ public class W2A1_BurrowsWheelerTransform {
         StringBuilder result = new StringBuilder();
 
         // write your code here
+        
+        List<String> allStrings = new ArrayList<String>();
+        
+        for(int i = 0; i < text.length(); i++){
+        	allStrings.add(text.substring(i)+text.substring(0,i));
+        }
+        
+        Collections.sort(allStrings);
+        
+        for(int i = 0; i<allStrings.size(); i++){
+        	result.append(allStrings.get(i).charAt(text.length()-1));
+        }
 
         return result.toString();
     }
